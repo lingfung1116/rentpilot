@@ -1,0 +1,32 @@
+# Build artifacts
+.aws-sam/
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+.claude/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+out/ledger.jsonl
+
+# Old submission artifacts
+rentpilot_submit/
+rentpilot_submit.zip
+RentPilot-Devpost-Submission.zip
+
+# Temporary files
+*.tmp
+*.swp
+*~

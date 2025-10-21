@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "version": "static_json_v1",
+    "currency": "CAD/month",
+    "snapshot_month": "2024-10",
+    "source": "CMHC Average Rent (Table 1.1.2)",
+    "note": "Friendly names aliased to CMHC zones; medians pulled from CMHC when present; seed values used as fallback."
+  },
+  "city": "Toronto",
+  "medians": {
+    "studio": 2000,
+    "1bed": 2500,
+    "2bed": 3200
+  },
+  "neighbourhoods": [
+    {
+      "name": "Downtown Core",
+      "alias_of": "Zone 1 - Toronto (Central)",
+      "median": {
+        "1bed": 1968.0,
+        "studio": 1574.0,
+        "2bed": 2627.0
+      },
+      "transit": 95,
+      "distance_km": 0.5,
+      "source": "cmhc_alias"
+    },
+    {
+      "name": "Liberty Village",
+      "alias_of": "Zone 4 - Toronto (West)",
+      "median": {
+        "1bed": 1667.0,
+        "studio": 1345.0,
+        "2bed": 1969.0
+      },
+      "transit": 90,
+      "distance_km": 2.5,
+      "source": "cmhc_alias"
+    },
+    {
+      "name": "Midtown (Yonge–Eglinton)",
+      "alias_of": "Zone 3 - Toronto (North)",
+      "median": {
+        "1bed": 1889.0,
+        "studio": 1570.0,
+        "2bed": 2391.0
+      },
+      "transit": 88,
+      "distance_km": 6.1,
+      "source": "cmhc_alias"
+    },
+    {
+      "name": "Etobicoke",
+      "alias_of": "Etobicoke (Zones 5-7)",
+      "median": {
+        "1bed": 1661.0,
+        "studio": 1473.0,
+        "2bed": 1948.0
+      },
+      "transit": 72,
+      "distance_km": 9.8,
+      "source": "cmhc_alias"
+    },
+    {
+      "name": "North York",
+      "alias_of": "North York (Zones 13-17)",
+      "median": {
+        "1bed": 1648.0,
+        "studio": 1254.0,
+        "2bed": 1902.0
+      },
+      "transit": 80,
+      "distance_km": 11.5,
+      "source": "cmhc_alias"
+    },
+    {
+      "name": "Scarborough",
+      "alias_of": "Scarborough (Zones 10-12)",
+      "median": {
+        "1bed": 1592.0,
+        "studio": 1420.0,
+        "2bed": 1758.0
+      },
+      "transit": 70,
+      "distance_km": 13.1,
+      "source": "cmhc_alias"
+    }
+  ]
+}

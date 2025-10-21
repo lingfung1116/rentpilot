@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "version": "static_json_v1",
+    "currency": "CAD/month",
+    "snapshot_month": "2024-10",
+    "source": "CMHC Average Rent (Table 1.1.2)",
+    "note": "Friendly names aliased to CMHC zones; medians pulled from CMHC when present; seed values used as fallback."
+  },
+  "city": "Vancouver",
+  "medians": {
+    "studio": 2100,
+    "1bed": 2550,
+    "2bed": 3300
+  },
+  "neighbourhoods": [
+    {
+      "name": "Downtown",
+      "alias_of": "Zone 3 - Downtown",
+      "median": {
+        "1bed": 2076.0,
+        "studio": 1783.0,
+        "2bed": 3189.0
+      },
+      "transit": 96,
+      "distance_km": 0.5,
+      "source": "cmhc_alias"
+    },
+    {
+      "name": "Kitsilano",
+      "alias_of": "Zone 5 - Kitsilano/Point Grey",
+      "median": {
+        "1bed": 1870.0,
+        "studio": 1509.0,
+        "2bed": 2685.0
+      },
+      "transit": 83,
+      "distance_km": 4.0,
+      "source": "cmhc_alias"
+    },
+    {
+      "name": "Mount Pleasant",
+      "alias_of": "Zone 8 - Mount Pleasant/Renfrew Heights",
+      "median": {
+        "1bed": 1732.0,
+        "studio": 1624.0,
+        "2bed": 2413.0
+      },
+      "transit": 85,
+      "distance_km": 3.0,
+      "source": "cmhc_alias"
+    },
+    {
+      "name": "East Vancouver",
+      "alias_of": "Zone 9 - East Hastings",
+      "median": {
+        "1bed": 1600.0,
+        "studio": 1625.0,
+        "2bed": 2402.0
+      },
+      "transit": 80,
+      "distance_km": 5.5,
+      "source": "cmhc_alias"
+    },
+    {
+      "name": "Burnaby Metrotown",
+      "alias_of": "Zone 12 - Central Park/Metrotown",
+      "median": {
+        "1bed": 1647.0,
+        "studio": 1513.0,
+        "2bed": 1954.0
+      },
+      "transit": 82,
+      "distance_km": 9.0,
+      "source": "cmhc_alias"
+    },
+    {
+      "name": "Richmond City Centre",
+      "alias_of": "Zone 19 - Richmond",
+      "median": {
+        "1bed": 1724.0,
+        "studio": 1451.0,
+        "2bed": 2127.0
+      },
+      "transit": 78,
+      "distance_km": 12.0,
+      "source": "cmhc_alias"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "city": "Toronto",
+  "property_type": "1bed",
+  "income_annual": 80000,
+  "prefs": {
+    "max_distance_km": 12,
+    "min_transit": 70,
+    "target_rent_to_income": 0.30
+  },
+  "budget_cap": 2200
+}

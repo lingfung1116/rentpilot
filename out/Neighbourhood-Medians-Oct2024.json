@@ -1,0 +1,281 @@
+{
+  "version": "CMHC Oct 2024",
+  "source": "local-merged",
+  "cities": {
+    "Toronto": {
+      "meta": {
+        "version": "static_json_v1",
+        "currency": "CAD/month",
+        "snapshot_month": "2024-10",
+        "source": "CMHC Average Rent (Table 1.1.2)",
+        "note": "Friendly names aliased to CMHC zones; medians pulled from CMHC when present; seed values used as fallback."
+      },
+      "city": "Toronto",
+      "medians": {
+        "studio": 2000,
+        "1bed": 2500,
+        "2bed": 3200
+      },
+      "neighbourhoods": [
+        {
+          "name": "Downtown Core",
+          "alias_of": "Zone 1 - Toronto (Central)",
+          "median": {
+            "1bed": 1968.0,
+            "studio": 1574.0,
+            "2bed": 2627.0
+          },
+          "transit": 95,
+          "distance_km": 0.5,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "Liberty Village",
+          "alias_of": "Zone 4 - Toronto (West)",
+          "median": {
+            "1bed": 1667.0,
+            "studio": 1345.0,
+            "2bed": 1969.0
+          },
+          "transit": 90,
+          "distance_km": 2.5,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "Midtown (Yonge–Eglinton)",
+          "alias_of": "Zone 3 - Toronto (North)",
+          "median": {
+            "1bed": 1889.0,
+            "studio": 1570.0,
+            "2bed": 2391.0
+          },
+          "transit": 88,
+          "distance_km": 6.1,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "Etobicoke",
+          "alias_of": "Etobicoke (Zones 5-7)",
+          "median": {
+            "1bed": 1661.0,
+            "studio": 1473.0,
+            "2bed": 1948.0
+          },
+          "transit": 72,
+          "distance_km": 9.8,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "North York",
+          "alias_of": "North York (Zones 13-17)",
+          "median": {
+            "1bed": 1648.0,
+            "studio": 1254.0,
+            "2bed": 1902.0
+          },
+          "transit": 80,
+          "distance_km": 11.5,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "Scarborough",
+          "alias_of": "Scarborough (Zones 10-12)",
+          "median": {
+            "1bed": 1592.0,
+            "studio": 1420.0,
+            "2bed": 1758.0
+          },
+          "transit": 70,
+          "distance_km": 13.1,
+          "source": "cmhc_alias"
+        }
+      ]
+    },
+    "Vancouver": {
+      "meta": {
+        "version": "static_json_v1",
+        "currency": "CAD/month",
+        "snapshot_month": "2024-10",
+        "source": "CMHC Average Rent (Table 1.1.2)",
+        "note": "Friendly names aliased to CMHC zones; medians pulled from CMHC when present; seed values used as fallback."
+      },
+      "city": "Vancouver",
+      "medians": {
+        "studio": 2100,
+        "1bed": 2550,
+        "2bed": 3300
+      },
+      "neighbourhoods": [
+        {
+          "name": "Downtown",
+          "alias_of": "Zone 3 - Downtown",
+          "median": {
+            "1bed": 2076.0,
+            "studio": 1783.0,
+            "2bed": 3189.0
+          },
+          "transit": 96,
+          "distance_km": 0.5,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "Kitsilano",
+          "alias_of": "Zone 5 - Kitsilano/Point Grey",
+          "median": {
+            "1bed": 1870.0,
+            "studio": 1509.0,
+            "2bed": 2685.0
+          },
+          "transit": 83,
+          "distance_km": 4.0,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "Mount Pleasant",
+          "alias_of": "Zone 8 - Mount Pleasant/Renfrew Heights",
+          "median": {
+            "1bed": 1732.0,
+            "studio": 1624.0,
+            "2bed": 2413.0
+          },
+          "transit": 85,
+          "distance_km": 3.0,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "East Vancouver",
+          "alias_of": "Zone 9 - East Hastings",
+          "median": {
+            "1bed": 1600.0,
+            "studio": 1625.0,
+            "2bed": 2402.0
+          },
+          "transit": 80,
+          "distance_km": 5.5,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "Burnaby Metrotown",
+          "alias_of": "Zone 12 - Central Park/Metrotown",
+          "median": {
+            "1bed": 1647.0,
+            "studio": 1513.0,
+            "2bed": 1954.0
+          },
+          "transit": 82,
+          "distance_km": 9.0,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "Richmond City Centre",
+          "alias_of": "Zone 19 - Richmond",
+          "median": {
+            "1bed": 1724.0,
+            "studio": 1451.0,
+            "2bed": 2127.0
+          },
+          "transit": 78,
+          "distance_km": 12.0,
+          "source": "cmhc_alias"
+        }
+      ]
+    },
+    "Montreal": {
+      "meta": {
+        "version": "static_json_v1",
+        "currency": "CAD/month",
+        "snapshot_month": "2024-10",
+        "source": "CMHC Average Rent (Table 1.1.2)",
+        "note": "Friendly names aliased to CMHC zones; medians pulled from CMHC when present; seed values used as fallback."
+      },
+      "city": "Montreal",
+      "medians": {
+        "studio": 1600,
+        "1bed": 1900,
+        "2bed": 2400
+      },
+      "neighbourhoods": [
+        {
+          "name": "Ville-Marie (Downtown)",
+          "alias_of": "Zone 1 - Downtown Montréal/Îles-des-Soeurs",
+          "median": {
+            "1bed": 1476.0,
+            "studio": 1194.0,
+            "2bed": 1884.0
+          },
+          "transit": 95,
+          "distance_km": 0.7,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "Griffintown",
+          "alias_of": "Zone 2 - Sud-Ouest/Verdun",
+          "median": {
+            "1bed": 1045.0,
+            "2bed": 1215.0
+          },
+          "transit": 90,
+          "distance_km": 1.5,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "Plateau-Mont-Royal",
+          "alias_of": "Zone 6 - Plateau-Mont-Royal",
+          "median": {
+            "1bed": 1176.0,
+            "studio": 985.0,
+            "2bed": 1460.0
+          },
+          "transit": 88,
+          "distance_km": 2.0,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "Outremont",
+          "alias_of": "Zone 5 - Ct-des-Neiges/Mt-Royal/Outremont",
+          "median": {
+            "1bed": 1049.0,
+            "studio": 871.0,
+            "2bed": 1310.0
+          },
+          "transit": 86,
+          "distance_km": 4.5,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "Rosemont–La Petite-Patrie",
+          "alias_of": "Zone 9 - Rosemont/La Petite-Patrie",
+          "median": {
+            "1bed": 1093.0,
+            "studio": 819.0
+          },
+          "transit": 83,
+          "distance_km": 4.0,
+          "source": "cmhc_alias"
+        },
+        {
+          "name": "Verdun",
+          "alias_of": "Zone 2 - Sud-Ouest/Verdun",
+          "median": {
+            "1bed": 1045.0,
+            "2bed": 1215.0
+          },
+          "transit": 80,
+          "distance_km": 6.0,
+          "source": "cmhc_alias"
+        }
+      ]
+    }
+  },
+  "meta": {
+    "Toronto": {
+      "keys": 4
+    },
+    "Vancouver": {
+      "keys": 4
+    },
+    "Montreal": {
+      "keys": 4
+    }
+  }
+}

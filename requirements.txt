@@ -1,0 +1,5 @@
+# RentPilot Agent — Python Dependencies
+# For local CLI usage: pip install -r requirements.txt
+# Lambda runtime includes boto3 by default
+
+boto3>=1.34.0

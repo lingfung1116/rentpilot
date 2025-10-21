@@ -1,0 +1,188 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>RentPilot: AWS Bedrock Affordability Agent</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#0b0f14; --card:#121823; --text:#e9eef4; --muted:#b8c7d8; --accent:#3fa3ff; --border:#233143;
+    --chip:#0f1621; --chip-border:#2d3b50;
+  }
+  /* base */
+  body{background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;margin:0}
+  .wrap{max-width:900px;margin:0 auto;padding:24px}
+  h1{margin:0 0 6px}
+  .sub{color:var(--muted);margin:4px 0 16px}
+  /* cards / inputs */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin:12px 0 18px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+  input{width:100%;background:#0e141d;color:var(--text);border:1px solid var(--border);border-radius:12px;padding:12px}
+  input::placeholder{color:#c7d3e0;opacity:.85} /* higher contrast placeholder */
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+  /* buttons / chips */
+  button{background:var(--accent);color:#001425;border:0;border-radius:12px;padding:10px 16px;font-weight:700;cursor:pointer}
+  button:disabled{opacity:.6;cursor:not-allowed}
+  .muted{color:var(--muted)}
+  pre{white-space:pre-wrap;word-wrap:break-word;background:#0e141d;border:1px solid var(--border);border-radius:12px;padding:12px}
+  .pill{display:inline-block;background:#0e141d;border:1px solid var(--border);padding:4px 10px;border-radius:999px;font-size:12px;color:var(--text);margin-right:6px}
+  .badge{background:var(--chip);border:1px solid var(--chip-border);color:var(--text);border-radius:999px;padding:6px 12px;cursor:pointer;font-weight:700}
+  .badge:hover{border-color:#415272;transform:translateY(-0.5px)}
+  .ok{color:#8be28b}.bad{color:#ff8c8c}
+  /* overlay spinner */
+  #overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:50}
+  .spinner{width:36px;height:36px;border:3px solid #3b4556;border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+
+<div class="wrap">
+  <h1>RentPilot: AWS Bedrock Affordability Agent</h1>
+  <div class="sub">API Gateway → Lambda → Bedrock (Claude 3 Sonnet). Deterministic tools, verification, and a strict JSON envelope.</div>
+
+  <div class="card">
+    <label for="q" class="muted">Ask in plain English (you can include details like city, budget, income, transit, distance)</label>
+    <input id="q" placeholder="e.g. Is $2,200/month reasonable for a 1-bed in Toronto on an $80k salary?">
+    <div class="row">
+      <label class="muted"><input id="showjson" type="checkbox" checked> Show JSON envelope</label>
+      <button id="run">Run Agent ➜</button>
+      <span class="muted">Backend: API Gateway → Lambda → Bedrock</span>
+    </div>
+  </div>
+
+  <div class="card" id="samples">
+    <div class="muted" style="margin-bottom:6px">Sample prompts</div>
+    <div class="row" id="samples-row"></div>
+  </div>
+
+  <div id="out" style="display:none;">
+    <div class="card">
+      <div class="muted">Summary</div>
+      <div id="summary" style="margin-top:6px"></div>
+      <div class="muted" style="margin-top:12px">Verify</div>
+      <div id="verify" style="margin-top:6px"></div>
+    </div>
+
+    <div class="card">
+      <div class="muted">Model Plan/Actions (peek)</div>
+      <pre id="peek"></pre>
+    </div>
+
+    <div class="card" id="jsoncard">
+      <div class="muted">JSON Envelope</div>
+      <pre id="json"></pre>
+    </div>
+
+    <div class="row" style="margin-top:-4px">
+      <span class="pill" id="meta-pill" title="Appears after first run">model: —</span>
+      <button id="copycurl" class="muted" style="background:#0e141d;color:var(--text);border:1px solid var(--border);font-weight:700">Copy cURL</button>
+    </div>
+  </div>
+
+  <div class="muted">Each interaction is logged to the ledger (local JSONL + optional S3) for reproducibility.</div>
+</div>
+
+<div id="overlay"><div class="spinner"></div></div>
+
+<script>
+  // Set your API once here:
+  const API = "YOUR_AGENT_API_URL"; // e.g. https://u77rgya1pd.execute-api.us-east-1.amazonaws.com/prod/agent
+
+  // DOM refs
+  const q = document.getElementById('q');
+  const runBtn = document.getElementById('run');
+  const showjson = document.getElementById('showjson');
+  const out = document.getElementById('out');
+  const summary = document.getElementById('summary');
+  const verify = document.getElementById('verify');
+  const peek = document.getElementById('peek');
+  const jsonpre = document.getElementById('json');
+  const jsoncard = document.getElementById('jsoncard');
+  const metaPill = document.getElementById('meta-pill');
+  const copyBtn = document.getElementById('copycurl');
+  const overlay = document.getElementById('overlay');
+  const samplesRow = document.getElementById('samples-row');
+
+  function setBusy(b){
+    runBtn.disabled = b;
+    runBtn.textContent = b ? 'Running…' : 'Run Agent ➜';
+    overlay.style.display = b ? 'flex' : 'none';
+  }
+
+  async function callAPI(query){
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query })
+    });
+    const text = await res.text();
+    let data; try { data = JSON.parse(text); } catch { data = { error: text || `HTTP ${res.status}` }; }
+    if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
+    return data;
+  }
+
+  function showError(msg){
+    out.style.display = 'block';
+    summary.textContent = "❌ " + msg;
+    verify.textContent = "(no verify)";
+    peek.textContent = "";
+    jsoncard.style.display = 'block';
+    jsonpre.textContent = JSON.stringify({ error: msg }, null, 2);
+    metaPill.textContent = "model: —";
+  }
+
+  function render(env){
+    out.style.display = 'block';
+    const a = env?.answer || {};
+    summary.textContent = "✅ " + (a.summary ?? a.message ?? "(no summary)");
+    const v = env?.verify || {};
+    if (v.ok === true) verify.innerHTML = '<span class="ok">OK</span>';
+    else if (v.ok === false) verify.innerHTML = '<span class="bad">Not OK</span>' + (v.reasons ? ' — ' + v.reasons.join('; ') : (v.notes ? ' — ' + v.notes : ''));
+    else verify.textContent = '(unknown)';
+    peek.textContent = JSON.stringify({ plan: env?.plan, actions: env?.actions }, null, 2);
+
+    if (showjson.checked) { jsoncard.style.display = 'block'; jsonpre.textContent = JSON.stringify(env, null, 2); }
+    else { jsoncard.style.display = 'none'; jsonpre.textContent = ''; }
+
+    const model = env?.meta?.model_id || '—';
+    metaPill.textContent = `model: ${model}`;
+  }
+
+  async function run(){
+    const query = q.value.trim();
+    if (!query) return;
+    setBusy(true);
+    try { render(await callAPI(query)); }
+    catch(e){ console.error(e); showError(e.message || String(e)); }
+    finally{ setBusy(false); }
+  }
+
+  // Copy cURL button (handy for judges)
+  copyBtn.addEventListener('click', async () => {
+    const query = q.value.trim() || 'ping';
+    const curl = `curl -s -X POST "${API}" -H 'Content-Type: application/json' -d '${JSON.stringify({query})}' | jq .`;
+    await navigator.clipboard.writeText(curl);
+    copyBtn.textContent = 'Copied!';
+    setTimeout(() => copyBtn.textContent = 'Copy cURL', 1200);
+  });
+
+  // Enter to run
+  q.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); run(); }});
+  runBtn.addEventListener('click', run);
+
+  // Conversational, human-sounding samples (no "::" parameters)
+  const samples = [
+    {label:'Quick check', q:'Could you check the typical 1-bed rent in Toronto and whether $2,200/month makes sense on an $80k salary?'},
+    {label:'Shortlist areas', q:'Help me shortlist a few Toronto neighbourhoods for a 1-bed. Budget is about $2,200/month, within roughly 12 km of downtown, and I’d like decent transit (around 70+).'},
+    {label:'Explain the math', q:'Before picking places, explain how you decide if a rent is affordable—for example, is $2,400/month reasonable on an $85k income?'},
+    {label:'Graceful error', q:'Try evaluating affordability with just a rent price so I can see your error handling.'}
+  ];
+  samples.forEach(s => {
+    const b = document.createElement('button');
+    b.className = 'badge';
+    b.textContent = s.label;
+    b.onclick = () => { q.value = s.q; run(); };
+    samplesRow.appendChild(b);
+  });
+
+  // URL param ?q=...
+  const params = new URLSearchParams(location.search);
+  const preset = params.get("q");
+  if (preset) { q.value = preset; run(); }
+</script>

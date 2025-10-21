@@ -1,0 +1,152 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: RentPilot — Lambda tools + API (REST API)
+
+Globals:
+  Function:
+    Runtime: python3.11
+    Timeout: 10
+    MemorySize: 512
+    Environment:
+      Variables:
+        # Static local dataset for demo (LIVE_MODE=0)
+        FTA_DATA_PATH: "data/Neighbourhood Medians Patching.json"
+        LIVE_MODE: "0"
+        DATA_VERSION: "Static local demo"
+
+Resources:
+
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowOrigin: "'*'"
+
+  GetRentDataFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambdas/get_rent_data.lambda_handler
+      Events:
+        RentGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /rent
+            Method: GET
+
+  GetNeighbourhoodStatsFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambdas/get_neighbourhood_stats.lambda_handler
+      Events:
+        NeighGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /neighbourhoods
+            Method: GET
+
+  SuggestNeighbourhoodsFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambdas/suggest_neighbourhoods.lambda_handler
+      Events:
+        SuggestPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /suggest
+            Method: POST
+
+  EvaluateAffordabilityFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambdas/evaluate_rent_affordability.lambda_handler
+      Events:
+        AffordPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /afford
+            Method: POST
+
+  AgentHandlerFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambdas/agent_handler.lambda_handler
+      Runtime: python3.11
+      Timeout: 25
+      MemorySize: 512
+      Environment:
+        Variables:
+          MODEL_ID: "anthropic.claude-3-sonnet-20240229-v1:0"
+          AGENT_VERSION: "v2-bedrock"
+          # Ledger (local file in Lambda temp)
+          LEDGER_LOCAL_ENABLE: "1"
+          LEDGER_LOCAL_PATH: "/tmp/ledger.jsonl"
+          # Optional S3 ledger mirroring (leave commented for demo)
+          # LEDGER_S3_BUCKET: "rentpilot-artifacts"
+          # LEDGER_S3_PREFIX: "ledger/"
+          # Optional live dataset (leave disabled for demo)
+          # LIVE_MODE: "1"
+          # FTA_DATA_URL: "https://<bucket>.s3.<region>.amazonaws.com/cmhc/Neighbourhood-Medians-Oct2024.json"
+          # CITY_DATA_URLS: |
+          #   { "Toronto":"...", "Vancouver":"...", "Montreal":"..." }
+      Policies:
+        - Statement:
+            # Bedrock access scoped to foundation models in current region
+            - Effect: Allow
+              Action:
+                - "bedrock:InvokeModel"
+                - "bedrock:InvokeModelWithResponseStream"
+              Resource: !Sub "arn:aws:bedrock:${AWS::Region}::foundation-model/*"
+            # If you enable S3 ledger mirroring, uncomment and scope properly:
+            # - Effect: Allow
+            #   Action: ["s3:PutObject"]
+            #   Resource: "arn:aws:s3:::rentpilot-artifacts/*"
+      Events:
+        AgentPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /agent
+            Method: POST
+
+  TestHealthFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambdas/test_health.lambda_handler
+      Events:
+        HealthGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /test
+            Method: GET
+
+  SelfTestFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambdas/selftest_lambda.lambda_handler
+      Events:
+        ToolsPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /test/tools
+            Method: POST
+
+Outputs:
+  AgentApiUrl:
+    Description: POST /agent endpoint
+    Value: !Sub "https://${Api}.execute-api.${AWS::Region}.amazonaws.com/prod/agent"

@@ -1,0 +1,20 @@
+{
+  "Toronto": {
+    "mapped": 6,
+    "unmapped": 0,
+    "with_cmhc_values": 6,
+    "with_seed_fallbacks": 0
+  },
+  "Vancouver": {
+    "mapped": 6,
+    "unmapped": 0,
+    "with_cmhc_values": 6,
+    "with_seed_fallbacks": 0
+  },
+  "Montreal": {
+    "mapped": 6,
+    "unmapped": 0,
+    "with_cmhc_values": 6,
+    "with_seed_fallbacks": 0
+  }
+}
